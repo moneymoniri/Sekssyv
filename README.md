@@ -8,7 +8,7 @@ Prosjektet bruker maskinlæring til å skille pasienter med og uten gallestein, 
 
 | Fil | Beskrivelse |
 |---|---|
-| `dataset-uci.xlsx` | Datasettet (Excel-filen din, brukes direkte): 319 pasienter, én rad per pasient, med målinger som alder, vekt og blodprøver. |
+| `dataset-uci.xlsx` | Datasettet (ikke inkludert, du har den allerede): 319 pasienter med målinger som alder, vekt og blodprøver. Legg den i samme mappe som programmene. |
 | `load_data.py` | Hjelpefil som leser Excel-filen. Filen er lagret i et spesialformat som vanlige verktøy ikke klarer å åpne, så denne leser den på en annen måte. |
 | `requirements.txt` | Liste over Python-pakker som må installeres. |
 
@@ -19,7 +19,7 @@ Prosjektet bruker maskinlæring til å skille pasienter med og uten gallestein, 
 | `analysis.py` | Trener og sammenligner fire modeller, og skriver ut hvor godt hver av dem gjør det. Lagrer underveisresultater i `state.pkl`. |
 | `explain.py` | Finner ut hvilke målinger som betyr mest for modellens svar, og lager tabellene og figurene under. |
 
-Legg alle filene, inkludert `dataset-uci.xlsx`, i samme mappe. Kjør `analysis.py` først og `explain.py` etterpå.
+Legg alle filene, inkludert din egen `dataset-uci.xlsx`, i samme mappe. Kjør `analysis.py` først og `explain.py` etterpå.
 
 ### Underveisfil
 
@@ -46,6 +46,23 @@ pip3 install -r requirements.txt
 python3 analysis.py
 python3 explain.py
 ```
+
+## Kjøring (Windows)
+
+1. Installer Python fra python.org. Huk av for **«Add python.exe to PATH»** på første skjermbilde i installasjonen.
+2. Pakk ut zip-filen, eller legg alle filene i én mappe, for eksempel `C:\Users\DittNavn\Downloads\gallstone_project`.
+3. Åpne mappen i Filutforsker, skriv `cmd` i adressefeltet øverst og trykk Enter. Et svart kommandovindu åpnes i riktig mappe.
+4. Kjør kommandoene én og én:
+
+```
+pip install -r requirements.txt
+python analysis.py
+python explain.py
+```
+
+Hvis `python` ikke finnes, prøv `py` i stedet (`py -m pip install -r requirements.txt`, `py analysis.py`, `py explain.py`).
+
+Figurene (`fig_*.png`) og tabellene (`*.csv`) dukker opp i samme mappe når `explain.py` er ferdig.
 
 ## Kort oppsummering
 
