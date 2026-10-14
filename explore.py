@@ -5,17 +5,20 @@ from scipy.stats import mannwhitneyu
 
 from load_data import load_clean, load_xlsx, short
 
-COLORS = ["#eb6834", "#2a78d6"]  # orange = gallstones (0), blue = no gallstones (1)
+COLORS = ["#eb6834", "#2a78d6"]  #orange = gallstones (0), blue = no gallstones (1)
 
 
 def main():
     # 1. Initial data review
     raw = load_xlsx()
-    categorical = raw.columns[raw.nunique() <= 5]
-    continuous = [c for c in raw.columns if c not in categorical]
+    categorical = raw.columns[raw.nunique() <= 5] #counts how many different values each column has and turns into true/false (keep columns with 5 or less)  )
+    continuous = []
+    for column in raw.columns:
+        if column not in categorical:
+            continuous.append(column) #sorted
 
-    print("Shape:", raw.shape)
-    print("Data types:", raw.dtypes.value_counts().to_dict())
+    print("Shape:", raw.shape) #size of table
+    print("Data types:", raw.dtypes.value_counts().to_dict()) #gives raw data type of each columns and how many columns
     print("Missing values:", raw.isna().sum().sum())
     print("Duplicate rows:", raw.duplicated().sum())
     print("Categorical features:", list(categorical))
