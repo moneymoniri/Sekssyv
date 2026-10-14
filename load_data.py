@@ -12,4 +12,4 @@ def load_xlsx():
 if __name__ == "__main__":
     df = load_xlsx()
     print(df.shape)
-    print(df.iloc[:, 0].value_counts())
+    print(df["Gallstone Status"].value_counts())

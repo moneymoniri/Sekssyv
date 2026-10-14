@@ -1,85 +1,73 @@
 ﻿import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.inspection import permutation_importance
 
 from load_data import load_xlsx
+from analysis import make_models
 
 
 def main():
     df = load_xlsx()
     target = df.pop("Gallstone Status")
 
-    logistic_model = Pipeline(
-        [
-            ("scaler", StandardScaler()),
-            ("model", LogisticRegression(max_iter=5000)),
-        ]
+    X_train, X_test, y_train, y_test = train_test_split(
+        df, target, test_size=0.25, random_state=42, stratify=target
     )
 
-    random_forest = RandomForestClassifier(
-        n_estimators=200,
-        random_state=42,
-        n_jobs=-1,
-    )
+    print("Positive coefficient: towards no gallstones")
+    print("Negative coefficient: towards gallstones")
+    print("All models below are fitted on training patients only.")
 
-    decision_tree = DecisionTreeClassifier(
-        max_depth=3,
-        min_samples_leaf=10,
-        random_state=42,
-    )
+    for name, model in make_models().items():
+        model.fit(X_train, y_train)
 
-    # Train Logistic Regression
-    logistic_model.fit(df, target)
+        # Get coefficients or built-in tree importance
+        if name == "Logistic Regression":
+            coefficients = model.named_steps["model"].coef_[0]
+            ranking = pd.DataFrame(
+                {
+                    "feature": df.columns,
+                    "coefficient": coefficients,
+                    "importance": abs(coefficients),
+                }
+            )
+        else:
+            ranking = pd.DataFrame(
+                {
+                    "feature": df.columns,
+                    "importance": model.feature_importances_,
+                }
+            )
 
-    # Get the coefficient for each measurement
-    logistic_coefficients = logistic_model.named_steps["model"].coef_[0]
+        ranking = ranking.sort_values("importance", ascending=False)
 
-    logistic_result = pd.DataFrame(
-        {
-            "feature": df.columns,
-            "coefficient": logistic_coefficients,
-        }
-    )
+        print(f"\n{name}: built-in ranking")
+        print(
+            ranking[ranking["importance"] > 0]
+            .head(10)
+            .to_string(index=False)
+        )
 
-    # Rank by size, regardless of whether the coefficient is positive or negative
-    logistic_result["importance"] = logistic_result["coefficient"].abs()
-    logistic_result = logistic_result.sort_values(
-        "importance", ascending=False
-    )
+        # Shuffle each measurement and check the drop in test accuracy
+        importance = permutation_importance(
+            model,
+            X_test,
+            y_test,
+            scoring="accuracy",
+            n_repeats=10,
+            random_state=42,
+        )
 
-    print("\nLogistic Regression: top 10 measurements")
-    print(logistic_result.head(10).to_string(index=False))
+        ranking = pd.DataFrame(
+            {
+                "feature": df.columns,
+                "accuracy_drop": importance.importances_mean,
+                "shuffle_sd": importance.importances_std,
+            }
+        ).sort_values("accuracy_drop", ascending=False)
 
-    # Train Random Forest
-    random_forest.fit(df, target)
-
-    # Get the importance of each measurement
-    random_forest_result = pd.DataFrame(
-        {
-            "feature": df.columns,
-            "importance": random_forest.feature_importances_,
-        }
-    ).sort_values("importance", ascending=False)
-
-    print("\nRandom Forest: top 10 measurements")
-    print(random_forest_result.head(10).to_string(index=False))
-
-    # Train Decision Tree
-    decision_tree.fit(df, target)
-
-    # Get the importance of each measurement
-    decision_tree_result = pd.DataFrame(
-        {
-            "feature": df.columns,
-            "importance": decision_tree.feature_importances_,
-        }
-    ).sort_values("importance", ascending=False)
-
-    print("\nDecision Tree: top 10 measurements")
-    print(decision_tree_result.head(10).to_string(index=False))
+        print(f"\n{name}: held-out permutation importance")
+        print(ranking.head(10).to_string(index=False))
 
 
 if __name__ == "__main__":
