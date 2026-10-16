@@ -6,7 +6,6 @@ import numpy as np
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 from load_data import load_clean, load_xlsx, short
-import kaleido
 
 COLORS = ["#eb6834", "#2a78d6"]  #orange = gallstones (0), blue = no gallstones (1)
 
