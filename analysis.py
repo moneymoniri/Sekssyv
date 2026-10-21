@@ -32,7 +32,7 @@ def make_pipeline(model):
     return Pipeline( 
         [
             ("scaler", MinMaxScaler()), # makes all values to values between 0 and 1, so the models are not biased by the scale of the measurements
-            ("select", SelectKBest(score_func=f_classif, k="all")),
+            ("select", SelectKBest(score_func=f_classif, k="all")), #select the best features based on the ANOVA F-value between the features and the target variable. This helps to reduce the dimensionality of the data and improve the performance of the model.
             ("model", model), # defines the model to be used
         ]
     )
@@ -46,7 +46,7 @@ def main():
         X, y, test_size=0.25, random_state=42
     )
 
-    # 3. Use 5-fold cross-validation when training the models
+    # 3. Use 5-fold cross-validation when training the models, used to test how the machine learning models perform on unseen data. The training data is split into 5 folds, and the model is trained on 4 folds and tested on the remaining fold. This process is repeated 5 times, with each fold being used as the test set once. The results are averaged to get a more reliable estimate of the model's performance.
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
     # 4. Choose the models and settings we want to test
