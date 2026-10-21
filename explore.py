@@ -23,11 +23,11 @@ def main():
     print("Data types:", raw.dtypes.value_counts().to_dict()) #gives raw data type of each columns and how many columns
     print("Missing values:", raw.isna().sum().sum()) #sum of all mising values in table
     print("Duplicate rows:", raw.duplicated().sum()) #sum of all duplicate values in table
-    summary = raw[continuous].describe().T #extracts continious table from sheet
+    summary = raw[continuous].describe().T #extracts continious table from sheet #T is for transpose, so that the features are on the left and the statistics are on top
     #keep just the lowest, average and highest value
     print(summary[["min", "mean", "max"]].round(1)) #future overview requirement
 
-    #cleaning of extreme values
+    #Showing values that are very extreme, more than 10 standard deviations away from the mean
     too_high = summary["max"] > summary["mean"] + 10 * summary["std"]
     too_low = summary["min"] < summary["mean"] - 10 * summary["std"]
     print("\nFeatures with very extreme values:", list(summary.index[too_high | too_low]))
@@ -35,7 +35,7 @@ def main():
     df, target = load_clean()  # df is cleaned table of measurements, target is diagnosis of each patient (0 or 1)
 
     #plot 1: class balance
-    counts = target.value_counts().sort_index() #count and sort gallstone diagnosis sums so that 0 is the first ros
+    counts = target.value_counts().sort_index() #count and sort gallstone diagnosis sums so that 0 is the first row
     plt.bar(["Gallstones", "No gallstones"], counts, color=COLORS) #draws bar chart, with the counts as heights
     plt.title("Class balance")
     plt.savefig("fig_1_class_balance.png", dpi=150)
