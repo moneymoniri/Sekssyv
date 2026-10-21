@@ -55,17 +55,6 @@ def main(): #Starts the function that holds the code of the script. Nothing runs
     top_coefficients = sorted_coefficients.head(10)
     print(top_coefficients.round(2))
 
-    tree = models["Decision Tree"] #picks the decision tree pipeline out of the models dictionary
-
-    kept = X_test.columns[tree.named_steps["select"].get_support()] #finds which measurements the tree was allowed to use.
-
-    kept_short_names = []
-    for column in kept:
-        kept_short_names.append(short(column)) # loop that turns full column names into short names and collects them in kept_short_names, in the same order as kept
-
-    tree_model = tree.named_steps["model"] # takes the actual decision tree classifier out of the pipeline
-    print("\nDecision Tree rules (0 = gallstones, values are standardized):")
-    print(export_text(tree_model, feature_names=kept_short_names)) # export: reads the splits in the tree and writes them as indented if/else rules
 
 if __name__ == "__main__": # runs everything,
     main()
