@@ -127,22 +127,7 @@ def main():
         auc = roc_auc_score(y_test == 0, probabilities)
         print("Gallstone ROC-AUC:", round(auc, 3)) # calculates the ROC-AUC score for the model's predictions on the test data, specifically for the class of patients with gallstones (label 0). The ROC-AUC score is a measure of how well the model separates the two classes (gallstones vs no gallstones). A higher ROC-AUC score means the model is better at separating the two classes.
 
-    # 8. Test Logistic Regression on 10 patients (Test on unseen data)
-    sample = X_test.sample(10, random_state=42) #take out 10 patients
 
-    actual = y_test.loc[sample.index] # find the actual diagnoses for the 10 patients
-    predicted = best["Logistic Regression"].predict(sample) # use the best parameters for the logistic regression model to predict whether the 10 patients have gallstones or not
-
-
-    #Show the results in a table with the actual and predicted diagnoses for the 10 patients. The actual diagnoses are mapped to "Gallstones" and "None" for better readability, and the predicted diagnoses are also mapped to "Gallstones" and "None". The results are printed to the console for review.
-    results = pd.DataFrame()
-
-    results["Actual"] = actual
-    results["Predicted"] = predicted
-
-    results = results.replace({0: "Gallstones", 1: "None"})
-
-    print(results)
 
     # 9. Save the trained models for explain.py
     joblib.dump((best, X_test, y_test), "models.joblib")

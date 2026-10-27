@@ -2,6 +2,13 @@ import re
 from pathlib import Path
 import pandas as pd
 
+# Problem Definition:
+# The goal of this project is to see if we can use machine learning to 
+# predict whether a patient has gallstones based on medical information
+# such as age, BMI, cholesterol levels, and other health measurements.
+# We compare three models: Logistic Regression, Random Forest, and
+# Decision Tree, to see which one makes the most accurate predictions 
+# and use different settings for the models to optimize their performance.
 
 DATASET_PATH = Path(__file__).with_name("dataset-uci.xlsx") 
 
