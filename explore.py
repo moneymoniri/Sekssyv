@@ -58,11 +58,27 @@ def main():
     data = data.melt(id_vars="Group")               #combines the entirety of the feature colunmns into a single column, so each row is one measurement, must be done beecause px.box limitations
 
     #step 4: draw one boxplot panel per feature, 3 panels per row
-    fig = px.box(data, x="Group", y="value", facet_col="variable", facet_col_wrap=3) #from data, draw boxplots with Group on x-axis and value on y-axis, make one panel for each variable and wrap after 3 panels
-    fig.update_yaxes(matches=None)                  #every panel gets its own y-scale
-    fig.update_layout(title="Comparison of Features Between Gallstone Groups", showlegend=False) #titling
-    fig.show() 
-    print ("Plot 2 in browser (downloadable)")
+    fig = px.box(
+        data, x="Group", y="value", color="Group",                 #colour each box by group
+        facet_col="variable", facet_col_wrap=3,                     #one panel per feature, 3 per row
+        color_discrete_map={"Gallstones": COLORS[0], "None": COLORS[1]},  #same orange/blue as plot 1
+        category_orders={"Group": ["Gallstones", "None"]},          #gallstones always on the left
+        facet_row_spacing=0.12, facet_col_spacing=0.06,             #more space between panels
+        template="plotly_white",                                    #white background instead of grey
+    )
+    fig.for_each_annotation(lambda a: a.update(text=f"<b>{a.text.split('=')[-1]}</b>", font_size=14))  #"variable=CRP" -> bold "CRP"
+    fig.update_yaxes(matches=None, showticklabels=True, title_text="")  #own y-scale and visible numbers on every panel
+    fig.update_xaxes(title_text="")                                 #group names under the boxes are enough
+    fig.update_traces(boxmean=True, marker=dict(size=4, opacity=0.6), line_width=1.5)  #dashed line = mean, smaller outlier dots
+    fig.update_layout(
+        title=dict(text="Comparison of Features Between Gallstone Groups", x=0.5, font_size=20),
+        boxmode="overlay",                                          #centres each box over its label
+        showlegend=False, width=1100, height=700,
+        font=dict(family="Arial", size=12),
+        margin=dict(t=90, l=40, r=20, b=40),
+    )
+    fig.show()          
+    print("Plot 2 successful")
 
     #plot 3: correlation between the continuous features 
     corr = df[continuous].rename(columns=short).corr()  # correlation between all continuous features, with short names
