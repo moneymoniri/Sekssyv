@@ -33,7 +33,7 @@ def main(): #Starts the function that holds the code of the script. Nothing runs
     print(importance.head(10).round(3))
     importance.round(3).to_csv("importance.csv")#rounds all numbers to 3 decimals and saves the full table to a file called importance.csv
 
-    top10 = importance.head(10).drop(columns="mean_rank")
+    top10 = importance.head(10).drop(columns="mean_rank").iloc[::-1]
     top10.plot.barh(figsize=(8, 6)) #takes the 10 first (best) rows, removes the mean_rank column from this copy, reverses the row order, draws the horizontal bar chart.
     plt.xlabel("Drop in AUC when the measurement is shuffled") #writes the label under the x-axis
     plt.tight_layout() #adjusts the spacing so the labels and text fit inside the figure
