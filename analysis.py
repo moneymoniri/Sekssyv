@@ -11,20 +11,19 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.tree import DecisionTreeClassifier
 from load_data import load_clean
 
-model_reasons = {
-    "Logistic Regression":
-        "A simple baseline for binary classification. "
-        "It is useful for understanding how patient features "
-        "are associated with gallstone status.",
 
-    "Random Forest":
-        "Can capture complex and non-linear relationships "
-        "between patient measurements and gallstone status.",
+   #Logistic Regression:
+        # A simple baseline for binary classification. 
+        # It is useful for understanding how patient features 
+       # are associated with gallstone status.
 
-    "Decision Tree":
-        "Makes predictions using simple rules, making "
-        "the results easy to interpret."
-    }
+    #Random Forest:
+     #   Can capture complex and non-linear relationships 
+      #  between patient measurements and gallstone status
+
+    #Decision Tree:
+     # Makes predictions using simple rules, making 
+    # the results easy to interpret."
 
 
 def make_pipeline(model):

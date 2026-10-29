@@ -1,7 +1,7 @@
 # Research question: which clinical characteristics distinguish patients with gallstone
 # disease from patients without, and how well can a model predict gallstone disease?
 import matplotlib.pyplot as plt
-import plotly.express as px   # replaces the two plotly imports at the top
+import plotly.express as px
 import numpy as np
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
@@ -13,7 +13,7 @@ COLORS = ["#eb6834", "#2a78d6"]  #orange = gallstones (0), blue = no gallstones 
 def main():
     # 1. Initial data review
     raw = load_xlsx()
-    categorical = raw.columns[raw.nunique() <= 2] #counts how many different values each column has and turns into true/false (keep columns with 5 or less)  )
+    categorical = raw.columns[raw.nunique() <= 2] #counts how many different values each column has and turns into true/false (keep columns with 2 or less)
     continuous = []
     for column in raw.columns:
         if column not in categorical:
@@ -78,7 +78,7 @@ def main():
         margin=dict(t=90, l=40, r=20, b=40),
     )
     fig.show()          
-    print("Plot 2 successful")
+    print("Plot 2 successful, shown in browser")
 
     #plot 3: correlation between the continuous features 
     corr = df[continuous].rename(columns=short).corr()  # correlation between all continuous features, with short names

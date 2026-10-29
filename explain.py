@@ -10,7 +10,6 @@ from load_data import short
 def main(): #Starts the function that holds the code of the script. Nothing runs unit "main" is called at the end.
     models, X_test, y_test = joblib.load("models.joblib")# reads the "models.joblib"file from disk and
                                                          # unpacks what is stored in it into three variables
-    print("Models were tuned and fitted on training patients only.")
 
     short_names = [] #Creates an empty list to fill up
     for column in X_test.columns:#Goes through the column names of X_test, one at a time, each column is one measurement, "column" holds the full name of one measurement per round of the loop.
