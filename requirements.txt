@@ -1,4 +1,5 @@
-﻿pandas
+pandas
 openpyxl
 scikit-learn
 matplotlib
+plotly

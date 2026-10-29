@@ -1,77 +1,76 @@
-# Gallestein-prosjektet
+# Predicting gallstone disease from clinical measurements
 
-Prosjektet bruker maskinlæring til å skille pasienter med og uten gallestein, og undersøker hvilke målinger modellen legger mest vekt på.
+DAT540 group project (group Sekssyv): Simen Helland, Chantel Helleland, Parsa Moniri, Theodor Solland, Martin Lærum.
 
-## Filer
+**Research question:** Can we distinguish patients with gallstones from patients without, using clinical measurements?
 
-### Inndata
+We train and compare three machine learning models (logistic regression, decision tree and random forest) on 319 patients, evaluate them on patients they have never seen, and check which measurements they rely on.
 
-| Fil | Beskrivelse |
+## Dataset
+
+`dataset-uci.xlsx` is the [Gallstone dataset](https://archive.ics.uci.edu/dataset/1150/gallstone-1) from the UCI Machine Learning Repository: 319 patients from a clinic in Ankara (2022–2023), with 38 measurements each (demographics, bioimpedance body composition and blood tests).
+
+The target column is `Gallstone Status`. Following the dataset's own coding, **0 = gallstones** (161 patients) and **1 = no gallstones** (158 patients).
+
+## Files
+
+| File | What it does |
 |---|---|
-| `dataset-uci.xlsx` | Datasettet (ikke inkludert, du har den allerede): 319 pasienter med målinger som alder, vekt og blodprøver. Legg den i samme mappe som programmene. |
-| `load_data.py` | Hjelpefil som leser Excel-filen. Filen er lagret i et spesialformat som vanlige verktøy ikke klarer å åpne, så denne leser den på en annen måte. |
-| `requirements.txt` | Liste over Python-pakker som må installeres. |
+| `load_data.py` | Reads the dataset and cleans it: drops missing and duplicate rows, and replaces one impossible Obesity value (1954%) with the column median. Returns the measurements (`X`) and the diagnosis (`y`). Also contains `short()`, which shortens column names for plots. |
+| `explore.py` | Explores the data: prints a data overview, flags extreme values, and draws the class balance, boxplots and correlation heatmap. |
+| `analysis.py` | Splits the data (75% training, 25% test), tunes each model with grid search and stratified 5-fold cross-validation, compares them with a baseline, prints the results, and saves the trained models to `models.joblib`. |
+| `explain.py` | Loads the saved models, measures which measurements matter with permutation importance, and prints the logistic regression coefficients. |
+| `requirements.txt` | The Python packages needed. |
 
-### Programmer
+## How to run
 
-| Fil | Beskrivelse |
-|---|---|
-| `analysis.py` | Trener og sammenligner fire modeller, og skriver ut hvor godt hver av dem gjør det. Lagrer underveisresultater i `state.pkl`. |
-| `explain.py` | Finner ut hvilke målinger som betyr mest for modellens svar, og lager tabellene og figurene under. |
+Put all files in the same folder, then run from that folder:
 
-Legg alle filene, inkludert din egen `dataset-uci.xlsx`, i samme mappe. Kjør `analysis.py` først og `explain.py` etterpå.
-
-### Underveisfil
-
-| Fil | Beskrivelse |
-|---|---|
-| `state.pkl` | Mellomlagring mellom de to programmene. Trenger ikke åpnes. |
-
-### Resultater
-
-| Fil | Beskrivelse |
-|---|---|
-| `importance.csv` | Hvor viktig hver måling er for modellen. Høyere tall betyr viktigere. |
-| `univariate.csv` | Sammenligning av gruppene med og uten gallestein, én måling om gangen. |
-| `lr_coef.csv` | Om en høyere verdi øker eller reduserer sannsynligheten (logistisk regresjon). |
-| `fig_importance.png` | Stolpediagram over de viktigste målingene. |
-| `fig_pdp.png` | Hvordan modellens svar endrer seg når én måling går fra lav til høy. |
-| `fig_coef.png` | Hvilke målinger som trekker mot «gallestein» og hvilke som trekker mot «ikke gallestein». |
-
-## Kjøring (Mac)
-
-```
-cd ~/Downloads/files
-pip3 install -r requirements.txt
-python3 analysis.py
-python3 explain.py
-```
-
-## Kjøring (Windows)
-
-1. Installer Python fra python.org. Huk av for **«Add python.exe to PATH»** på første skjermbilde i installasjonen.
-2. Pakk ut zip-filen, eller legg alle filene i én mappe, for eksempel `C:\Users\DittNavn\Downloads\gallstone_project`.
-3. Åpne mappen i Filutforsker, skriv `cmd` i adressefeltet øverst og trykk Enter. Et svart kommandovindu åpnes i riktig mappe.
-4. Kjør kommandoene én og én:
-
-```
+```bash
 pip install -r requirements.txt
+python explore.py
 python analysis.py
 python explain.py
 ```
 
-Hvis `python` ikke finnes, prøv `py` i stedet (`py -m pip install -r requirements.txt`, `py analysis.py`, `py explain.py`).
+On Mac, use `pip3` and `python3`. On Windows, if `python` isn't found, use `py` instead.
 
-Figurene (`fig_*.png`) og tabellene (`*.csv`) dukker opp i samme mappe når `explain.py` er ferdig.
+`analysis.py` must run before `explain.py`, because `explain.py` loads the models that `analysis.py` saves. All random steps use `random_state=42`, so every run gives the same results.
 
-## Kort oppsummering
+## Outputs
 
-- Modellene har en treffsikkerhet på rundt 75–78 %.
-- Viktigste målinger: CRP, deretter vitamin D.
-- Alder, kolesterol og lignende har liten betydning.
+| File | Made by | Shows |
+|---|---|---|
+| `fig_1_class_balance.png` | `explore.py` | Number of patients with and without gallstones |
+| Boxplots (opens in browser) | `explore.py` | The six measurements most linked to the diagnosis, compared between groups |
+| `fig_3_correlation.png` | `explore.py` | How the measurements correlate with each other |
+| `models.joblib` | `analysis.py` | The three trained models and the test patients |
+| `importance.csv` | `explain.py` | Permutation importance of every measurement, per model |
+| `fig_4_importance.png` | `explain.py` | The 10 most important measurements |
 
-## Forbehold
+## Method
 
-- Datasettet er lite (319 pasienter) fra ett sykehus, så resultatene er usikre.
-- Resultatene viser sammenhenger, ikke årsaker.
-- Det bør kontrolleres at kodingen «0 = gallestein» stemmer, siden retningen på enkelte effekter virker uvanlig.
+1. **Cleaning:** no missing values or duplicates were found; one data entry error was fixed with median imputation.
+2. **Split:** 25% of patients (80) are held out as a test set and only used at the end.
+3. **Pipeline:** each model runs in the same pipeline: MinMax scaling to 0–1, a feature selection step (`SelectKBest`, set to keep all features), then the model. Scaling is learned only from training data, which prevents data leakage.
+4. **Tuning:** `GridSearchCV` tries every combination of settings with stratified 5-fold cross-validation on the training data and picks the one with the best ROC-AUC.
+5. **Evaluation:** each tuned model is tested once on the held-out patients (accuracy, confusion matrix, gallstone recall and ROC-AUC) and compared with a baseline that always guesses the most common class.
+6. **Explanation:** permutation importance shuffles one measurement at a time and measures the drop in ROC-AUC.
+
+## Results
+
+| Model | Cross-validation AUC | Test accuracy | Test ROC-AUC | Gallstone recall |
+|---|---|---|---|---|
+| Logistic regression | 0.841 | 78.7% | 0.897 | 89.7% |
+| Random forest | 0.829 | 81.2% | 0.901 | 87.2% |
+| Decision tree | 0.755 | 73.8% | 0.779 | 89.7% |
+| Baseline (most common class) | | 48.7% | | |
+
+- All three models clearly beat the baseline. Logistic regression and the random forest are essentially tied.
+- **Vitamin D and CRP** are the most important measurements across all three models.
+
+## Limitations
+
+- The dataset is small (319 patients) and comes from a single clinic, with one train/test split, so the results need confirming on new data.
+- The results show associations, not causes.
+- Following the dataset's labels, the direction of several effects (for example vitamin D, CRP and body fat) is the opposite of published research, which suggests the labels may be swapped in the original data. This doesn't affect model performance, only the direction of the findings.
